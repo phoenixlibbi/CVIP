@@ -1,0 +1,33 @@
+# Ignore Python virtual environments
+venv/
+env/
+.env/
+__pycache__/
+
+# Ignore PyTorch model weights and checkpoints
+models/*.pt
+models/*.onnx
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore logs
+logs/
+
+# Ignore temporary files
+*.tmp
+*.log
+*.swp
+
+# Ignore db files
+*.db
+
+# Ignore uploaded files
+uploads/
