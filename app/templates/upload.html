@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Invoices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav>
+        <h1>Intelligent Invoice Management System</h1>
+        <button class="btn" onclick="window.close()">Exit</button>
+    </nav>
+
+    <!-- Main Container -->
+    <div id="container">
+        <h1>Upload Invoices</h1>
+        <div id="upload" onclick="document.getElementById('file-input').click()" ondrop="handleDrop(event)"
+            ondragover="handleDragOver(event)">
+            <p>Drag & Drop files here or click to upload</p>
+            <!-- Uploaded Files Section -->
+            <div id="uploaded-files">
+                <p id="no-files-message">No files, please drop some to proceed</p>
+            </div>
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="file" id="file-input" name="files" multiple accept="image/*"
+                    onchange="handleFiles(this.files)">
+            </form>
+        </div>
+        <button class="btn" onclick="uploadFiles()">Proceed</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+</body>
+
+</html>
