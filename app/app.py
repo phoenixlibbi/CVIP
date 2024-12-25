@@ -1,7 +1,8 @@
 from flask import Flask
 from flask_scss import Scss
-from models import db, Todo
+from models import db
 from utils.logging import logging_setup
+from utils.seeder import seed_data
 import os
 
 # Initialize Flask app
@@ -25,6 +26,7 @@ from routes.dashboard import dashboard_bp
 app.register_blueprint(upload_bp)
 app.register_blueprint(dashboard_bp)
 
+# Configure logging
 info_logger, error_logger = logging_setup()
 app.info_logger = info_logger
 app.error_logger = error_logger
@@ -32,4 +34,7 @@ app.error_logger = error_logger
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+        csv_file_path = "data.csv"
+        # seed_data(start=0, end=5000, file_path=csv_file_path, db=db, info_logger=info_logger, error_logger=error_logger)
+
     app.run(debug=True)
