@@ -92,6 +92,8 @@ async function uploadFiles() {
 
     if (response.ok) {
       alert("Files uploaded successfully!");
+      let uploadedFiles = [];
+      window.location.href = "/dashboard";
     } else {
       alert("Failed to upload files.");
     }
