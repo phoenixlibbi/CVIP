@@ -195,7 +195,7 @@
 
     <script>
         // Pass the invoices data from Flask to JavaScript
-        const invoices = {{ invoices | tojson | safe }};
+        const invoices = {{ all_invoices  | tojson | safe }};
 
         // Populate highlights
         document.getElementById('total-invoices').innerText = invoices.length;
@@ -224,7 +224,7 @@
             });
         });
 
-        // Sorting functionality (example for Serial Number column)
+        // Sorting functionality
         function sortTable(columnIndex) {
             const tableBody = document.querySelector('#invoice-table tbody');
             const rows = Array.from(tableBody.querySelectorAll('tr'));
@@ -232,8 +232,10 @@
             rows.forEach(row => tableBody.appendChild(row));
         }
 
-        // Example: Sort by Serial Number (column index 0)
+        // Add event listeners for sorting
         document.querySelector('#invoice-table thead th:nth-child(1)').addEventListener('click', () => sortTable(0));
+        document.querySelector('#invoice-table thead th:nth-child(2)').addEventListener('click', () => sortTable(1));
+        document.querySelector('#invoice-table thead th:nth-child(3)').addEventListener('click', () => sortTable(2));
 
         // Function to create the Top Sellers Chart
         function createTopSellersChart() {
