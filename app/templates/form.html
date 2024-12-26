@@ -1,68 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
 </head>
-<body>
-    <h1>Invoice Generator</h1>
-    <form action="/form" method="POST">
-        <h3>Supplier Details</h3>
-        <label for="supplier_name">Name:</label>
-        <input type="text" name="supplier_name" required><br>
-        <label for="supplier_address">Address:</label>
-        <input type="text" name="supplier_address" required><br>
-        <label for="supplier_st_no">S.T. Reg. No.:</label>
-        <input type="text" name="supplier_st_no"><br>
-        <label for="supplier_ntn">NTN:</label>
-        <input type="text" name="supplier_ntn"><br>
 
-        <h3>Buyer Details</h3>
-        <label for="buyer_name">Name:</label>
-        <input type="text" name="buyer_name" required><br>
-        <label for="buyer_address">Address:</label>
-        <input type="text" name="buyer_address" required><br>
-        <label for="buyer_st_no">S.T. Reg. No.:</label>
-        <input type="text" name="buyer_st_no"><br>
-        <label for="buyer_ntn">NTN:</label>
-        <input type="text" name="buyer_ntn"><br>
-        <label for="buyer_contact">Contact:</label>
-        <input type="text" name="buyer_contact"><br>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <h1>Invoice Generator</h1>
+        <button class="btn" onclick="window.close()">Exit</button>
+    </nav>
+
+    <!-- Form -->
+    <form action="/form" method="POST">
+        <div class="details-container">
+            <div>
+                <h3>Supplier Details</h3>
+                <label for="supplier_name">Name:</label>
+                <input type="text" name="supplier_name" required>
+                <label for="supplier_address">Address:</label>
+                <input type="text" name="supplier_address" required>
+                <label for="supplier_st_no">S.T. Reg. No.:</label>
+                <input type="text" name="supplier_st_no">
+                <label for="supplier_ntn">NTN:</label>
+                <input type="text" name="supplier_ntn">
+            </div>
+            <div>
+                <h3>Buyer Details</h3>
+                <label for="buyer_name">Name:</label>
+                <input type="text" name="buyer_name" required>
+                <label for="buyer_address">Address:</label>
+                <input type="text" name="buyer_address" required>
+                <label for="buyer_st_no">S.T. Reg. No.:</label>
+                <input type="text" name="buyer_st_no">
+                <label for="buyer_ntn">NTN:</label>
+                <input type="text" name="buyer_ntn">
+                <label for="buyer_contact">Contact:</label>
+                <input type="text" name="buyer_contact">
+            </div>
+        </div>
 
         <h3>Invoice Details</h3>
         <label for="business_name">Business Name:</label>
-        <input type="text" name="business_name" required><br>
+        <input type="text" name="business_name" required>
         <label for="serial_number">Serial Number:</label>
-        <input type="text" name="serial_number" required><br>
+        <input type="text" name="serial_number" required>
         <label for="invoice_date">Invoice Date:</label>
-        <input type="date" name="invoice_date" required><br>
+        <input type="date" name="invoice_date" required>
 
         <h3>Products</h3>
-        {% for i in range(1, 5) %}
-        <label for="product_{{ i }}_description">Product {{ i }} Description:</label>
-        <input type="text" name="product_{{ i }}_description"><br>
-        <label for="product_{{ i }}_quantity">Quantity:</label>
-        <input type="text" name="product_{{ i }}_quantity"><br>
-        <label for="product_{{ i }}_rate">Rate:</label>
-        <input type="text" name="product_{{ i }}_rate"><br>
-        <label for="product_{{ i }}_amount_ex_tax">Amount Excluding Tax:</label>
-        <input type="text" name="product_{{ i }}_amount_ex_tax"><br>
-        <label for="product_{{ i }}_sales_tax">Sales Tax:</label>
-        <input type="text" name="product_{{ i }}_sales_tax"><br>
-        <label for="product_{{ i }}_amount_in_tax">Amount Including Tax:</label>
-        <input type="text" name="product_{{ i }}_amount_in_tax"><br>
-        {% endfor %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    <th>Amount Excluding Tax</th>
+                    <th>Sales Tax</th>
+                    <th>Amount Including Tax</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(1, 5) %}
+                <tr>
+                    <td><input type="text" name="product_{{ i }}_description"></td>
+                    <td><input type="text" name="product_{{ i }}_quantity"></td>
+                    <td><input type="text" name="product_{{ i }}_rate"></td>
+                    <td><input type="text" name="product_{{ i }}_amount_ex_tax"></td>
+                    <td><input type="text" name="product_{{ i }}_sales_tax"></td>
+                    <td><input type="text" name="product_{{ i }}_amount_in_tax"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
         <h3>Totals</h3>
         <label for="total_ex_tax">Total Excluding Tax:</label>
-        <input type="text" name="total_ex_tax"><br>
+        <input type="text" name="total_ex_tax">
         <label for="total_sales_tax">Total Sales Tax:</label>
-        <input type="text" name="total_sales_tax"><br>
+        <input type="text" name="total_sales_tax">
         <label for="total_in_tax">Total Including Tax:</label>
-        <input type="text" name="total_in_tax"><br>
+        <input type="text" name="total_in_tax">
 
         <button type="submit">Generate PDF</button>
     </form>
 </body>
+
 </html>
