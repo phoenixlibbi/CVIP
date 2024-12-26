@@ -1,0 +1,95 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #20232a;
+  color: #61dafb;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #282c34;
+  padding: 1em;
+}
+
+nav h1 {
+  margin: 0;
+  font-weight: bold;
+  font-size: clamp(1.5em, 2.5vw, 2em);
+}
+
+#container {
+  width: auto;
+  height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+}
+
+h1 {
+  color: #61dafb;
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: 0;
+}
+
+p {
+  font-size: 1.2em;
+}
+
+.btn {
+  background-color: #282c34;
+  color: #61dafb;
+  padding: 0.5em 1em;
+  border: 2px solid #61dafb;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn:hover {
+  background-color: #61dafb;
+  color: #282c34;
+}
+
+.stats-box {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stats-box > div {
+  flex: 1;
+  padding: 1em;
+  background-color: #282c34;
+  border: 2px solid #61dafb;
+  border-radius: 10px;
+  color: #61dafb;
+}
+
+.invoice-list {
+  margin-top: 1rem;
+}
+
+.invoice-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-list th,
+.invoice-list td {
+  padding: 0.5em;
+  border: 1px solid #61dafb;
+  text-align: left;
+}
+
+.invoice-list th {
+  background-color: #282c34;
+}

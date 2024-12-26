@@ -2,15 +2,69 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-	{% block head %}{% endblock %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Invoice Details</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+	<style>
+
+	</style>
 </head>
 
 <body>
-	{% block body %}{% endblock %}
+	<nav>
+		<h1>Invoice Details for {{ name }}</h1>
+		<button class="btn" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+	</nav>
+
+	<div class="container mt-4">
+		<!-- Invoices List -->
+		<div class="invoice-list">
+			<h3>All Invoices</h3>
+			<table class="table table-hover table-dark table-responsive">
+				<thead>
+					<tr>
+						<th>Date</th>
+						<th>Serial Number</th>
+						<th>Total Amount (Excl. Tax)</th>
+						<th>Total Sales Tax</th>
+						<th>Total Amount (Incl. Tax)</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for invoice in invoices %}
+					<tr>
+						<td>{{ invoice.date }}</td>
+						<td>{{ invoice.customer_receipt_no }}</td>
+						<td>{{ invoice.total_amount_excluding_tax }}</td>
+						<td>{{ invoice.total_sales_tax }}</td>
+						<td>{{ invoice.total_amount_including_tax }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		<!-- Stats Boxes -->
+		<div class="stats-box">
+			<!-- Products List -->
+			<div class="products-list">
+				<h4>Unique Products Sold</h4>
+				<ul>
+					{% for product in products %}
+					<li>{{ product.product_name }} (Total Qty: {{ product.total_quantity }})</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<div>
+				<h4>Total Amount (Excl. Tax)</h4>
+				<p>{{ total_amount_excl_tax }}</p>
+				<h4>Total Amount (Incl. Tax)</h4>
+				<p>{{ total_amount_incl_tax }}</p>
+			</div>
+		</div>
+	</div>
 </body>
 
 </html>

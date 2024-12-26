@@ -11,8 +11,12 @@
 </head>
 
 <body>
+    <nav>
+        <h1>Invoice Dashboard</h1>
+        <button class="btn" onclick="window.location.href='/form'">Generate Invoice</button>
+    </nav>
+
     <div class="container mt-4">
-        <h1 class="text-center mb-4">Invoice Dashboard</h1>
         {% if process_result %}
         <p>{{ process_result }}</p>
         {% endif %}
@@ -99,7 +103,7 @@
                 </thead>
                 <tbody>
                     {% for invoice in invoices %}
-                    <tr>
+                    <tr onclick="window.location.href='/base?name={{ invoice.name }}'">
                         <td>{{ invoice.customer_receipt_no }}</td>
                         <td>{{ invoice.ntn }}</td>
                         <td>{{ invoice.name }}</td>

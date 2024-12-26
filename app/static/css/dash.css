@@ -8,6 +8,20 @@ body {
   text-align: center;
 }
 
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #282c34;
+  padding: 1em;
+}
+
+nav h1 {
+  margin: 0;
+  font-weight: bold;
+  font-size: clamp(1.5em, 2.5vw, 2em);
+}
+
 .card {
   background-color: #282c34;
   color: #61dafb;

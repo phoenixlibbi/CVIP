@@ -24,10 +24,12 @@ if not os.path.exists(UPLOAD_FOLDER):
 from routes.upload import upload_bp
 from routes.dashboard import dashboard_bp
 from routes.form import invoice_bp
+from routes.base import base_bp
 
 app.register_blueprint(upload_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(invoice_bp)
+app.register_blueprint(base_bp)
 
 # Configure logging
 info_logger, error_logger = logging_setup()
