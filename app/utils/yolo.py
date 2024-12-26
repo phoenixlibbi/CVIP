@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 import onnxruntime as ort
@@ -123,9 +124,19 @@ def draw_boxes(image, boxes, scores, class_ids, class_names):
         cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 def main():
-    # Paths
-    model_path = "best.onnx"
-    image_path = "test.jpeg"
+    
+    path = 'model'
+    images = 'uploads'
+
+    files = [file for file in os.listdir(path) if file.endswith('.onnx')]
+    if not files:
+        return "No model file found."
+    
+    model_path = os.path.join(path, files[0])
+    # model_path = "best.onnx"
+
+    files = os.listdir(images)
+    image_path = os.path.join(images, files[0])
 
     # Load the ONNX model
     session = load_onnx_model(model_path)
@@ -139,7 +150,7 @@ def main():
     # Postprocess the outputs
     boxes, scores, class_ids = postprocess_output(outputs)
 
-    # Draw bounding boxes on the image
+    # Draw bounding boxes on the image of these class names
     class_names = [
     "businessName",
     "buyerAddress",
@@ -166,8 +177,7 @@ def main():
     draw_boxes(original_image, boxes, scores, class_ids, class_names)
 
     # Save or display the result
-    cv2.imwrite("output.jpg", original_image)
-    cv2.imshow("Output", original_image)
+    cv2.imwrite(f"output.jpg", original_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
