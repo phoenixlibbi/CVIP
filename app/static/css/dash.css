@@ -28,9 +28,16 @@ body {
   overflow: auto;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
 .table {
   background-color: #282c34;
   color: #61dafb;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .table th {

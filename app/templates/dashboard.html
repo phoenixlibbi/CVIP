@@ -13,7 +13,9 @@
 <body>
     <div class="container mt-4">
         <h1 class="text-center mb-4">Invoice Dashboard</h1>
-
+        {% if process_result %}
+        <p>{{ process_result }}</p>
+        {% endif %}
         <!-- Highlights Section -->
         <div class="row text-center">
             <div class="col-md-3">
@@ -73,40 +75,70 @@
 
         <!-- Table Section -->
         <div class="table-responsive">
-            <table class="table table-hover table-dark">
+            <table class="table table-hover table-dark" id="invoice-table">
                 <thead>
                     <tr>
-                        <th onclick="sortTable(0)">Serial Number</th>
-                        <th onclick="sortTable(1)">Business Name</th>
-                        <th onclick="sortTable(2)">Seller Name</th>
-                        <th onclick="sortTable(3)">Address</th>
-                        <th onclick="sortTable(4)">Customer Name</th>
-                        <th onclick="sortTable(5)">Date</th>
+                        <th>Serial Number</th>
+                        <th>NTN</th>
+                        <th>Name</th>
+                        <th>ST Reg No</th>
+                        <th>Address</th>
+                        <th>Customer Receipt No</th>
+                        <th>Customer NTN</th>
+                        <th>Customer Name</th>
+                        <th>Customer ST Reg No</th>
+                        <th>Customer Phone Number</th>
+                        <th>Customer Address</th>
+                        <th>Business Name</th>
+                        <th>Date</th>
+                        <th>Total Amount (Excl. Tax)</th>
+                        <th>Total Sales Tax</th>
+                        <th>Total Amount (Incl. Tax)</th>
                         <th>Products</th>
                     </tr>
                 </thead>
-                <tbody id="invoice-table">
+                <tbody>
                     {% for invoice in invoices %}
-                    <tr onclick="openModal(this)" data-id="{{ invoice.id }}"
-                        data-customer-receipt-no="{{ invoice.customer_receipt_no }}"
-                        data-business-name="{{ invoice.business_name }}" data-name="{{ invoice.name }}"
-                        data-address="{{ invoice.address }}" data-customer-name="{{ invoice.customer_name }}"
-                        data-date="{{ invoice.date }}" data-products="{{ invoice.products | tojson | safe }}">
+                    <tr>
                         <td>{{ invoice.customer_receipt_no }}</td>
-                        <td>{{ invoice.business_name }}</td>
+                        <td>{{ invoice.ntn }}</td>
                         <td>{{ invoice.name }}</td>
+                        <td>{{ invoice.st_reg_no }}</td>
                         <td>{{ invoice.address }}</td>
+                        <td>{{ invoice.customer_receipt_no }}</td>
+                        <td>{{ invoice.customer_ntn }}</td>
                         <td>{{ invoice.customer_name }}</td>
+                        <td>{{ invoice.customer_st_reg_no }}</td>
+                        <td>{{ invoice.customer_phone_number }}</td>
+                        <td>{{ invoice.customer_address }}</td>
+                        <td>{{ invoice.business_name }}</td>
                         <td>{{ invoice.date }}</td>
+                        <td>{{ invoice.total_amount_excluding_tax }}</td>
+                        <td>{{ invoice.total_sales_tax }}</td>
+                        <td>{{ invoice.total_amount_including_tax }}</td>
                         <td>
-                            {% for product in invoice.products %}
-                            {{ product.product_name }} x {{ product.quantity }}{% if not loop.last %}, {% endif %}
-                            {% endfor %}
+                            <ul>
+                                {% for product in invoice.products %}
+                                <li>
+                                    {{ product.product_name }} (Qty: {{ product.quantity }}, Rate: {{ product.rate }},
+                                    Total: {{ product.total_price }})
+                                </li>
+                                {% endfor %}
+                            </ul>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Receipt Details</h2>
+                <div id="modal-content"></div>
+            </div>
         </div>
 
         <!-- Pagination -->
@@ -159,15 +191,6 @@
                 {% endif %}
             </ul>
         </nav>
-
-        <!-- Modal -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2>Receipt Details</h2>
-                <div id="modal-content"></div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -180,103 +203,46 @@
         document.getElementById('unique-customers').innerText = new Set(invoices.map(inv => inv.customer_name)).size;
         document.getElementById('unique-products').innerText = new Set(invoices.flatMap(inv => inv.products.map(p => p.product_name))).size;
 
-        function openModal(row) {
-            // Get the invoice data from the row's data attributes
-            const invoice = {
-                id: row.getAttribute('data-id'),
-                customer_receipt_no: row.getAttribute('data-customer-receipt-no'),
-                business_name: row.getAttribute('data-business-name'),
-                name: row.getAttribute('data-name'),
-                address: row.getAttribute('data-address'),
-                customer_name: row.getAttribute('data-customer-name'),
-                date: row.getAttribute('data-date'),
-                products: JSON.parse(row.getAttribute('data-products'))
-            };
-
-            // Build the modal content
-            const modalContent = `
-        <p><strong>Serial Number:</strong> ${invoice.customer_receipt_no}</p>
-        <p><strong>Business Name:</strong> ${invoice.business_name}</p>
-        <p><strong>Seller Name:</strong> ${invoice.name}</p>
-        <p><strong>Address:</strong> ${invoice.address}</p>
-        <p><strong>Customer Name:</strong> ${invoice.customer_name}</p>
-        <p><strong>Date:</strong> ${invoice.date}</p>
-        <h3>Products</h3>
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Total Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${invoice.products.map(product => `
-                    <tr>
-                        <td>${product.product_name}</td>
-                        <td>${product.quantity}</td>
-                        <td>${product.quantity * product.rate}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-
-            // Display the modal
-            document.getElementById('modal-content').innerHTML = modalContent;
-            document.getElementById('modal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        // Close the modal if the user clicks outside of it
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
         // Search functionality
         document.getElementById('search-box').addEventListener('input', function () {
             const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#invoice-table tr');
+            const rows = document.querySelectorAll('#invoice-table tbody tr');
             rows.forEach(row => {
                 const rowText = row.innerText.toLowerCase();
                 row.style.display = rowText.includes(searchValue) ? "" : "none";
             });
         });
 
-        // Sorting functionality
-        function sortTable(columnIndex) {
-            const tableBody = document.getElementById('invoice-table');
-            const rows = Array.from(tableBody.children);
-            rows.sort((a, b) => a.children[columnIndex].innerText.localeCompare(b.children[columnIndex].innerText));
-            rows.forEach(row => tableBody.appendChild(row));
-        }
-
         // Filter by date
         document.getElementById('filter-date').addEventListener('click', function () {
             const startDate = new Date(document.getElementById('start-date').value);
             const endDate = new Date(document.getElementById('end-date').value);
-            const rows = document.querySelectorAll('#invoice-table tr');
+            const rows = document.querySelectorAll('#invoice-table tbody tr');
             rows.forEach(row => {
-                const rowDate = new Date(row.children[5].innerText);
-                row.style.display = rowDate >= startDate && rowDate <= endDate ? "" : "none";
+                const rowDate = new Date(row.children[12].innerText); // Date is in the 13th column (index 12)
+                row.style.display = (rowDate >= startDate && rowDate <= endDate) ? "" : "none";
             });
         });
 
+        // Sorting functionality (example for Serial Number column)
+        function sortTable(columnIndex) {
+            const tableBody = document.querySelector('#invoice-table tbody');
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            rows.sort((a, b) => a.children[columnIndex].innerText.localeCompare(b.children[columnIndex].innerText));
+            rows.forEach(row => tableBody.appendChild(row));
+        }
+
+        // Example: Sort by Serial Number (column index 0)
+        document.querySelector('#invoice-table thead th:nth-child(1)').addEventListener('click', () => sortTable(0));
+
         // Function to create the Top Sellers Chart
         function createTopSellersChart() {
-            // Group invoices by seller and count the number of invoices per seller
             const sellerCounts = {};
             invoices.forEach(invoice => {
                 const seller = invoice.name;
                 sellerCounts[seller] = (sellerCounts[seller] || 0) + 1;
             });
 
-            // Sort sellers by invoice count and get the top 10
             const sortedSellers = Object.entries(sellerCounts)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10);
@@ -310,14 +276,12 @@
 
         // Function to create the Invoices Over Time Chart
         function createInvoicesOverTimeChart() {
-            // Group invoices by date and count the number of invoices per date
             const dateCounts = {};
             invoices.forEach(invoice => {
                 const date = invoice.date;
                 dateCounts[date] = (dateCounts[date] || 0) + 1;
             });
 
-            // Sort dates in ascending order
             const sortedDates = Object.entries(dateCounts).sort((a, b) => new Date(a[0]) - new Date(b[0]));
 
             const labels = sortedDates.map(entry => entry[0]);
