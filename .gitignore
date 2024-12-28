@@ -5,8 +5,8 @@ env/
 __pycache__/
 
 # Ignore PyTorch model weights and checkpoints
-models/*.pt
-models/*.onnx
+*.pt
+*.onnx
 
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
@@ -29,5 +29,6 @@ logs/
 # Ignore db files
 *.db
 
-# Ignore uploaded files
+# Ignore uploaded & model inferenced files
 uploads/
+output/

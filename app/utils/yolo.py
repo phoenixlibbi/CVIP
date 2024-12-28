@@ -2,184 +2,100 @@ import os
 import cv2
 import numpy as np
 import onnxruntime as ort
+from ultralytics import YOLO
 
 def load_onnx_model(model_path):
-    """
-    Load the YOLO model from an ONNX file.
+    return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
 
-    Args:
-        model_path (str): Path to the ONNX model file.
-
-    Returns:
-        session: ONNX runtime inference session.
-    """
-    # Create an ONNX runtime session
-    session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
-    return session
+def load_pt_model(model_path):
+    return YOLO(model_path)
 
 def preprocess_image(image_path, input_shape=(640, 640)):
-    """
-    Preprocess the input image for YOLO model.
-
-    Args:
-        image_path (str): Path to the input image.
-        input_shape (tuple): Model input shape (height, width).
-
-    Returns:
-        image (np.ndarray): Preprocessed image.
-        original_image (np.ndarray): Original image for visualization.
-    """
-    # Load the image
     original_image = cv2.imread(image_path)
     if original_image is None:
         raise ValueError(f"Image not found at path: {image_path}")
-
-    # Resize and normalize the image
     image = cv2.resize(original_image, input_shape)
-    image = image.astype(np.float32) / 255.0  # Normalize to [0, 1]
-    image = np.transpose(image, (2, 0, 1))  # Change to CHW format
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = image.astype(np.float32) / 255.0
+    image = np.transpose(image, (2, 0, 1))
+    image = np.expand_dims(image, axis=0)
     return image, original_image
 
-def run_inference(session, image):
-    """
-    Run inference using the ONNX model.
-
-    Args:
-        session: ONNX runtime session.
-        image (np.ndarray): Preprocessed input image.
-
-    Returns:
-        outputs: Model outputs.
-    """
-    # Get input name
+def run_inference_onnx(session, image):
     input_name = session.get_inputs()[0].name
+    return session.run(None, {input_name: image})
 
-    # Run inference
-    outputs = session.run(None, {input_name: image})
-    return outputs
+def run_inference_pt(model, image_path):
+    return model(image_path)
 
-def postprocess_output(outputs, confidence_threshold=0.5):
-    """
-    Postprocess the model outputs to get bounding boxes, scores, and class IDs.
-
-    Args:
-        outputs: Model outputs.
-        confidence_threshold (float): Confidence threshold for filtering detections.
-
-    Returns:
-        boxes (list): List of bounding boxes.
-        scores (list): List of confidence scores.
-        class_ids (list): List of class IDs.
-    """
-    # Example: Assuming the output is in the format [batch, num_detections, 6]
-    # where each detection is [x1, y1, x2, y2, confidence, class_id]
-    detections = outputs[0][0]
-
-    # Filter detections based on confidence threshold
-    boxes = []
-    scores = []
-    class_ids = []
-    for detection in detections:
-        confidence = detection[4]
-        if confidence > confidence_threshold:
-            x1, y1, x2, y2 = detection[:4]
-            class_id = detection[5]
-            boxes.append([x1, y1, x2, y2])
-            scores.append(float(confidence))
-            class_ids.append(int(class_id))
-
+def postprocess_output_pt(results, confidence_threshold=0.5):
+    boxes, scores, class_ids = [], [], []
+    for result in results:
+        for box in result.boxes:
+            confidence = box.conf.item()
+            if confidence > confidence_threshold:
+                x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                class_id = int(box.cls.item())
+                boxes.append([x1, y1, x2, y2])
+                scores.append(confidence)
+                class_ids.append(class_id)
     return boxes, scores, class_ids
 
 def draw_boxes(image, boxes, scores, class_ids, class_names):
-    """
-    Draw bounding boxes on the image.
-
-    Args:
-        image (np.ndarray): Original image.
-        boxes (list): List of bounding boxes.
-        scores (list): List of confidence scores.
-        class_ids (list): List of class IDs.
-        class_names (list): List of class names.
-    """
-    print("Class IDs:", class_ids)  # Debug: Print class IDs
     for box, score, class_id in zip(boxes, scores, class_ids):
         x1, y1, x2, y2 = map(int, box)
-
-        # Adjust for one-indexed class IDs (if necessary)
-        class_id = class_id - 1  # Subtract 1 to convert to zero-indexed
-
-        # Handle invalid class IDs
         if class_id < 0 or class_id >= len(class_names):
-            print(f"Warning: Invalid class ID {class_id + 1}. Skipping this detection.")
-            continue  # Skip this detection
-
+            continue
         class_name = class_names[class_id]
-
-        # Draw bounding box
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-
-        # Draw label
         label = f"{class_name}: {score:.2f}"
         cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
 def main():
-    
-    path = 'model'
-    images = 'uploads'
+    model_dir = 'model'
+    image_dir = 'uploads'
+    output_dir = 'output'
 
-    files = [file for file in os.listdir(path) if file.endswith('.onnx')]
-    if not files:
-        return "No model file found."
-    
-    model_path = os.path.join(path, files[0])
-    # model_path = "best.onnx"
+    model_files = [f for f in os.listdir(model_dir) if f.endswith(('.pt', '.onnx'))]
+    if not model_files:
+        print("No model file found.")
+        return
 
-    files = os.listdir(images)
-    image_path = os.path.join(images, files[0])
+    # Prefer .pt over .onnx
+    model_path = os.path.join(model_dir, next((f for f in model_files if f.endswith('.pt')), model_files[0]))
 
-    # Load the ONNX model
-    session = load_onnx_model(model_path)
+    image_files = os.listdir(image_dir)
+    if not image_files:
+        print("No image file found.")
+        return
+    image_path = os.path.join(image_dir, image_files[0])
 
-    # Preprocess the image
-    image, original_image = preprocess_image(image_path)
+    # Load model
+    if model_path.endswith('.pt'):
+        model = load_pt_model(model_path)
+        results = run_inference_pt(model, image_path)
+        boxes, scores, class_ids = postprocess_output_pt(results)
+    elif model_path.endswith('.onnx'):
+        session = load_onnx_model(model_path)
+        image, _ = preprocess_image(image_path)
+        outputs = run_inference_onnx(session, image)
+        boxes, scores, class_ids = postprocess_output_pt(outputs)
+    else:
+        raise ValueError("Unsupported model format.")
 
-    # Run inference
-    outputs = run_inference(session, image)
+    # Load original image for drawing
+    original_image = cv2.imread(image_path)
 
-    # Postprocess the outputs
-    boxes, scores, class_ids = postprocess_output(outputs)
-
-    # Draw bounding boxes on the image of these class names
     class_names = [
-    "businessName",
-    "buyerAddress",
-    "buyerContact",
-    "buyerNTN",
-    "buyerName",
-    "buyerSTN",
-    "date",
-    "excl",
-    "incl",
-    "products",
-    "quantity",
-    "rate",
-    "sales",
-    "serialNumber",
-    "supplierAddress",
-    "supplierNTN",
-    "supplierName",
-    "supplierSTN",
-    "total",
-    "SRNO"
-]
+        "businessName", "buyerAddress", "buyerContact", "buyerNTN", "buyerName",
+        "buyerSTN", "date", "excl", "incl", "products", "quantity", "rate",
+        "sales", "serialNumber", "supplierAddress", "supplierNTN", "supplierName",
+        "supplierSTN", "total", "unknown"
+    ]
 
     draw_boxes(original_image, boxes, scores, class_ids, class_names)
-
-    # Save or display the result
-    cv2.imwrite(f"output.jpg", original_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, os.path.splitext(image_files[0])[0] + '__inferenced.jpg')
+    cv2.imwrite(output_path, original_image)
 
 if __name__ == "__main__":
     main()
