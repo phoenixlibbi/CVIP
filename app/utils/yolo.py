@@ -63,7 +63,7 @@ def main():
     # Prefer .pt over .onnx
     model_path = os.path.join(model_dir, next((f for f in model_files if f.endswith('.pt')), model_files[0]))
 
-    image_files = os.listdir(image_dir)
+    image_files = [f for f in os.listdir(image_dir) if f.endswith(('dng', 'bmp', 'tif', 'mpo', 'jpg', 'pfm', 'tiff', 'jpeg', 'webp', 'heic', 'png'))]
     if not image_files:
         print("No image file found.")
         return
@@ -85,12 +85,26 @@ def main():
     # Load original image for drawing
     original_image = cv2.imread(image_path)
 
-    class_names = [
-        "businessName", "buyerAddress", "buyerContact", "buyerNTN", "buyerName",
-        "buyerSTN", "date", "excl", "incl", "products", "quantity", "rate",
-        "sales", "serialNumber", "supplierAddress", "supplierNTN", "supplierName",
-        "supplierSTN", "total", "unknown"
-    ]
+    class_names = ["SRNO"
+                ,"businessName"
+                ,"buyerAddress"
+                ,"buyerContact"
+                ,"buyerNTN"
+                ,"buyerName"
+                ,"buyerSTN"
+                ,"date"
+                ,"excl"
+                ,"incl"
+                ,"products"
+                ,"quantity"
+                ,"rate"
+                ,"sales"
+                ,"serialNumber"
+                ,"supplierAddress"
+                ,"supplierNTN"
+                ,"supplierName"
+                ,"supplierSTN"
+                ,"total"]
 
     draw_boxes(original_image, boxes, scores, class_ids, class_names)
     os.makedirs(output_dir, exist_ok=True)

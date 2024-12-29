@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template
-from models import Invoice, Product
+from utils.models import Invoice, Product
 from collections import defaultdict
 
 base_bp = Blueprint('base', __name__)

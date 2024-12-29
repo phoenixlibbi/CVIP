@@ -1,0 +1,27 @@
+{
+    "name": "Flask App",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/app",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "dbaeumer.vscode-eslint",
+                "ms-azuretools.vscode-docker"
+            ],
+            "settings": {
+                "python.pythonPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.formatting.autopep8Path": "/usr/local/bin/autopep8",
+                "python.formatting.blackPath": "/usr/local/bin/black",
+                "python.formatting.yapfPath": "/usr/local/bin/yapf",
+                "python.linting.pylintPath": "/usr/local/bin/pylint",
+                "python.linting.flake8Path": "/usr/local/bin/flake8"
+            }
+        }
+    },
+    "postCreateCommand": "pip install --no-cache-dir -r requirements.txt"
+}

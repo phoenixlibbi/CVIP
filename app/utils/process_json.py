@@ -1,7 +1,7 @@
 import os
 import json
 from flask import current_app
-from models import db, Invoice, Product
+from utils.models import db, Invoice, Product
 
 def process_json_from_file():
     """

@@ -1,0 +1,13 @@
+services:
+  app:
+    container_name: AutoInvoice
+    build: .
+    ports:
+      - "5000:8080"
+    volumes:
+      - .:/app
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app

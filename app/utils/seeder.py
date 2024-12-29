@@ -1,5 +1,5 @@
 import pandas as pd
-from models import Invoice, Product
+from utils.models import Invoice, Product
 from flask_sqlalchemy import SQLAlchemy
 import logging
 

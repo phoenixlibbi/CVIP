@@ -1,5 +1,5 @@
 from flask import request, g, Blueprint, render_template
-from models import Invoice, Product
+from utils.models import Invoice, Product
 from datetime import datetime
 from utils.process_json import process_json_from_file
 
