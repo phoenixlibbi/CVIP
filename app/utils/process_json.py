@@ -3,7 +3,7 @@ import json
 from flask import current_app
 from utils.models import db, Invoice, Product
 
-def process_json_from_file():
+def json_to_db():
     """
     Reads the first JSON file in the current directory, parses its content,
     and stores the data in the database.
@@ -103,7 +103,7 @@ def process_json_from_file():
 
         # Log success and remove the JSON file
         current_app.info_logger.info(f"Successfully processed and stored data from {file_path}.")
-        os.remove(file_path)  # Remove the processed file
+        # os.remove(file_path)  # Remove the processed file
         return f"Successfully processed {file_path}."
 
     except Exception as e:

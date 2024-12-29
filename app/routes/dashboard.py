@@ -1,7 +1,7 @@
 from flask import request, g, Blueprint, render_template
 from utils.models import Invoice, Product
 from datetime import datetime
-from utils.process_json import process_json_from_file
+from utils.pipelline import main
 
 # Create a Blueprint for dashboard routes
 dashboard_bp = Blueprint('dashboard', __name__)
@@ -9,7 +9,7 @@ dashboard_bp = Blueprint('dashboard', __name__)
 @dashboard_bp.route("/dashboard")
 def dashboard():
     # Run the JSON processing function
-    process_result = process_json_from_file()
+    process_result = main()
 
     # Pagination setup
     page = request.args.get('page', 1, type=int)  # Get the current page number

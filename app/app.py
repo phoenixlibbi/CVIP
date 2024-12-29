@@ -5,7 +5,7 @@ from flask import Flask
 from flask_scss import Scss
 from utils.models import db, Invoice, Product
 from utils.logs import logging_setup
-from utils.process_json import process_json_from_file
+from utils.process_json import json_to_db
 from utils.seeder import seed_data
 import os
 
