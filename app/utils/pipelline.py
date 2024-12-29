@@ -6,6 +6,7 @@ import pytesseract
 import json
 import re
 import onnxruntime as ort
+from pdf2image import convert_from_path  # For PDF to Image conversion
 from utils.process_json import json_to_db
 
 
@@ -44,33 +45,50 @@ def extract_text_from_boxes(image, boxes, labels):
         json.dump(extracted_data, f, indent=4)
     return extracted_data
 
-
 def clean_extracted_data(raw_data):
+    # Define all expected keys and their default values
+    expected_keys = {
+        "businessName": "",
+        "products": [],
+        "quantity": [],
+        "rate": [],
+        "incl": [],
+        "excl": [],
+        "sales": [],
+        "total": ["0","0","0"],
+        "buyerSTN": "",
+        "supplierSTN": "",
+        "buyerNTN": "",
+        "buyerAddress": "",
+        "buyerName": "",
+        "supplierNTN": "",
+        "date": "",
+        "buyerContact": "",
+        "supplierAddress": "",
+        "serialNumber": "",
+        "supplierName": "",
+    }
+    
     cleaned_data = {}
-    for key, value in raw_data.items():
+    for key, default_value in expected_keys.items():
+        value = raw_data.get(key, None)
         if key == "businessName":
             if value:
-                # Remove "Sales Tax Invoice" and clean up newlines
                 business_name = value[0].replace("\n", " ")
                 cleaned_data[key] = business_name.replace("SALES TAX INVOICE", "").strip()
             else:
-                cleaned_data[key] = None
-        elif key in ["products"]:
-            cleaned_data[key] = value[0].split("\n") if value else []
+                cleaned_data[key] = default_value
+        elif key == "products":
+            cleaned_data[key] = value[0].split("\n") if value else default_value
             cleaned_data[key] = [item.strip() for item in cleaned_data[key] if item.strip()]
         elif key in ["quantity", "rate", "incl", "excl", "sales", "total"]:
-            # Clean numeric data
-            cleaned_data[key] = value[0].replace("\n", " ").split() if value else []
+            cleaned_data[key] = value[0].replace("\n", " ").split() if value else default_value
             cleaned_data[key] = [
                 re.sub(r"[^\d.]", "", item.replace(",", "")) for item in cleaned_data[key] if item.strip()
             ]
-        elif key in [
-            "buyerSTN",
-            "supplierSTN",
-        ]:
-            cleaned_data[key] = value[0].strip() if value and value[0].strip() else None
+        elif key in ["buyerSTN", "supplierSTN"]:
+            cleaned_data[key] = value[0].strip() if value and value[0].strip() else default_value
             if cleaned_data[key]:
-                # Remove unwanted characters from STN numbers
                 cleaned_data[key] = re.sub(r"[^\d]", "", cleaned_data[key])
         elif key in [
             "buyerNTN",
@@ -83,18 +101,20 @@ def clean_extracted_data(raw_data):
             "serialNumber",
             "supplierName",
         ]:
-            cleaned_data[key] = value[0].strip() if value and value[0].strip() else None
+            cleaned_data[key] = value[0].strip() if value and value[0].strip() else default_value
             if cleaned_data[key]:
                 cleaned_data[key] = re.sub(r"^[^:]*:\s*", "", cleaned_data[key])
         else:
-            cleaned_data[key] = value
+            cleaned_data[key] = value if value is not None else default_value
 
-    if all(key in cleaned_data for key in ["products", "quantity", "rate", "incl", "excl", "sales"]):
-        max_len = max(len(cleaned_data[key]) for key in ["products", "quantity", "rate", "incl", "excl", "sales"])
-        for key in ["products", "quantity", "rate", "incl", "excl", "sales"]:
+    # Ensure all lists in the table have the same length
+    if all(key in cleaned_data for key in ["products", "quantity", "rate", "incl", "excl", "sales", "total"]):
+        max_len = max(len(cleaned_data[key]) for key in ["products", "quantity", "rate", "incl", "excl", "sales", "total"] )
+        for key in ["products", "quantity", "rate", "incl", "excl", "sales", "total"]:
             cleaned_data[key] += [""] * (max_len - len(cleaned_data[key]))
 
     return cleaned_data
+
 
 # Load model
 def load_model(model_path):
@@ -104,6 +124,7 @@ def load_model(model_path):
         return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
     else:
         raise ValueError("Unsupported model format.")
+
 
 # Run inference
 def run_inference(model, image_path):
@@ -119,6 +140,7 @@ def run_inference(model, image_path):
         raise ValueError("Unsupported model type.")
     return boxes, labels
 
+
 # Preprocess image for ONNX
 def preprocess_for_onnx(image_path, input_shape=(640, 640)):
     original_image = cv2.imread(image_path)
@@ -129,6 +151,7 @@ def preprocess_for_onnx(image_path, input_shape=(640, 640)):
     image = np.transpose(image, (2, 0, 1))
     image = np.expand_dims(image, axis=0)
     return image, original_image
+
 
 # Process ONNX output
 def process_onnx_output(outputs, confidence_threshold=0.5):
@@ -141,12 +164,25 @@ def process_onnx_output(outputs, confidence_threshold=0.5):
                 labels.append(int(box[5]))
     return boxes, labels
 
+
 # Draw bounding boxes
 def draw_boxes(image, boxes, labels, class_names):
     for box, label in zip(boxes, labels):
         x1, y1, x2, y2 = map(int, box)
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(image, class_names[label], (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+
+# Function to convert PDF to JPEG
+def convert_pdf_to_jpeg(pdf_path, output_folder):
+    images = convert_from_path(pdf_path, dpi=300)
+    jpeg_paths = []
+    for i, image in enumerate(images):
+        jpeg_path = os.path.join(output_folder, f"{os.path.splitext(os.path.basename(pdf_path))[0]}_{i+1}.jpeg")
+        image.save(jpeg_path, 'JPEG')
+        jpeg_paths.append(jpeg_path)
+    return jpeg_paths
+
 
 # Main processing pipeline
 def process_image(image_path, output_folder, model):
@@ -164,8 +200,9 @@ def process_image(image_path, output_folder, model):
         json.dump(cleaned_text, f, indent=4)
 
     # os.remove(image_path)
-    print(f"Processed and deleted: {image_path}")
+    print(f"Processed: {image_path}")
     print(f"Cleaned data saved to: {json_path}")
+
 
 # Main function
 def main():
@@ -174,13 +211,27 @@ def main():
     model_path = "model/best.pt"
 
     os.makedirs(output_folder, exist_ok=True)
-    image_files = [f for f in os.listdir(input_folder) if f.lower().endswith(('jpg', 'jpeg', 'png', 'tiff', 'bmp', 'webp'))]
-    if not image_files:
-        print("No image files found in the input folder.")
-        return
-
+    files = os.listdir(input_folder)
     model = load_model(model_path)
-    process_image(os.path.join(input_folder, image_files[0]), output_folder, model)
+    
+    # Handle PDF files
+    for file in files:
+        file_path = os.path.join(input_folder, file)
+        if file.lower().endswith('.pdf'):
+            # Convert PDF to JPEG and process the images
+            jpeg_paths = convert_pdf_to_jpeg(file_path, output_folder)
+            for jpeg_path in jpeg_paths:
+                process_image(jpeg_path, output_folder, model)
+                os.remove(jpeg_path)  # Remove the JPEG after processing
+            os.remove(file_path)  # Remove the original PDF file
+            print(f"Processed and deleted PDF: {file_path}")
+
+        # Handle image files
+        elif file.lower().endswith(('jpg', 'jpeg', 'png', 'tiff', 'bmp', 'webp')):
+            process_image(file_path, output_folder, model)
+            os.remove(file_path)
+            print(f"Processed and deleted image: {file_path}")
+
     results = json_to_db()
     return results
 

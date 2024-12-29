@@ -1,0 +1,64 @@
+{
+    "supplierSTN": [
+        ""
+    ],
+    "supplierAddress": [
+        "Address: Bank Alfalah Limited"
+    ],
+    "buyerContact": [
+        "Phone: 3212308603"
+    ],
+    "excl": [
+        "880.00\n690.00\n1368.00\n3276.00",
+        "880.00\n690.00\n1368.00\n\n3276.00"
+    ],
+    "products": [
+        "Choice Essentials\nOptCore Design\nSimplify Solutions\n\nChoiceCore Files"
+    ],
+    "rate": [
+        "80.00\n46.00\n72.00\n63.00"
+    ],
+    "buyerName": [
+        "Name: muhammad nabeel"
+    ],
+    "date": [
+        "Date: 2024-12-25"
+    ],
+    "total": [
+        "6214.00\n\n1118.52\n\n7332.52",
+        "6214.00\n\n1118.52\n\n7332.52"
+    ],
+    "supplierName": [
+        ""
+    ],
+    "buyerAddress": [
+        "Address: H R-70 Society Sindh",
+        "Address: H R-70 Society Sindh"
+    ],
+    "buyerSTN": [
+        ""
+    ],
+    "quantity": [
+        "15\n19\n52",
+        "11\n15\n19\n32"
+    ],
+    "sales": [
+        "158.40\n124.20\n246.24\n989.68",
+        "158.40\n\n124.20\n\n246.24\n\n589.68"
+    ],
+    "incl": [
+        "1038.40\n814.20\n\n1614.24\n3865.68",
+        "1038.40\n814.20\n1614.24\n3865.68"
+    ],
+    "supplierNTN": [
+        ""
+    ],
+    "buyerNTN": [
+        "",
+        ""
+    ],
+    "businessName": [
+        "101 CHOICE",
+        "101 CHOICE"
+    ]
+}
