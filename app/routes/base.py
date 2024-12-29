@@ -13,6 +13,7 @@ def base():
 
     # Calculate total amounts
     total_amount_excl_tax = sum(invoice.total_amount_excluding_tax for invoice in invoices)
+    total_sales_tax = sum(invoice.total_sales_tax for invoice in invoices)
     total_amount_incl_tax = sum(invoice.total_amount_including_tax for invoice in invoices)
 
     # Get all products from the invoices and aggregate their quantities
@@ -36,5 +37,6 @@ def base():
         invoices=invoices,
         total_amount_excl_tax=total_amount_excl_tax,
         total_amount_incl_tax=total_amount_incl_tax,
+        total_sales_tax=total_sales_tax,
         products=products
     )

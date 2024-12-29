@@ -136,15 +136,6 @@
             </table>
         </div>
 
-        <!-- Modal -->
-        <div id="modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h2>Receipt Details</h2>
-                <div id="modal-content"></div>
-            </div>
-        </div>
-
         <!-- Pagination -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
@@ -208,14 +199,51 @@
         document.getElementById('unique-products').innerText = new Set(invoices.flatMap(inv => inv.products.map(p => p.product_name))).size;
 
         // Search functionality
+        // Search functionality - Search in all invoices data
         document.getElementById('search-box').addEventListener('input', function () {
             const searchValue = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#invoice-table tbody tr');
-            rows.forEach(row => {
-                const rowText = row.innerText.toLowerCase();
-                row.style.display = rowText.includes(searchValue) ? "" : "none";
+            const filteredInvoices = invoices.filter(invoice => {
+                const invoiceString = JSON.stringify(invoice).toLowerCase();
+                return invoiceString.includes(searchValue);
+            });
+
+            // Clear and repopulate the table with filtered data
+            const tableBody = document.querySelector('#invoice-table tbody');
+            tableBody.innerHTML = ''; // Clear current rows
+
+            filteredInvoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                row.onclick = () => window.location.href = `/base?name=${invoice.name}`;
+
+                row.innerHTML = `
+            <td>${invoice.customer_receipt_no}</td>
+            <td>${invoice.ntn}</td>
+            <td>${invoice.name}</td>
+            <td>${invoice.st_reg_no}</td>
+            <td>${invoice.address}</td>
+            <td>${invoice.customer_receipt_no}</td>
+            <td>${invoice.customer_ntn}</td>
+            <td>${invoice.customer_name}</td>
+            <td>${invoice.customer_st_reg_no}</td>
+            <td>${invoice.customer_phone_number}</td>
+            <td>${invoice.customer_address}</td>
+            <td>${invoice.business_name}</td>
+            <td>${invoice.date}</td>
+            <td>${invoice.total_amount_excluding_tax}</td>
+            <td>${invoice.total_sales_tax}</td>
+            <td>${invoice.total_amount_including_tax}</td>
+            <td>
+                <ul>
+                    ${invoice.products.map(product => `
+                        <li>${product.product_name} (Qty: ${product.quantity}, Rate: ${product.rate}, Total: ${product.total_price})</li>
+                    `).join('')}
+                </ul>
+            </td>
+        `;
+                tableBody.appendChild(row);
             });
         });
+
 
         // Filter by date
         document.getElementById('filter-date').addEventListener('click', function () {
