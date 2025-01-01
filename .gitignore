@@ -25,10 +25,14 @@ logs/
 *.tmp
 *.log
 *.swp
+*.json
+*.jsonl
 
 # Ignore db files
 *.db
 
 # Ignore uploaded & model inferenced files
+json/
+json_raw/
 uploads/
 output/

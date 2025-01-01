@@ -1,64 +1,67 @@
 {
-    "supplierSTN": [
-        ""
+    "total": [
+        "18,742.00 3,373.56 22,115.56"
     ],
     "supplierAddress": [
-        "Address: Bank Alfalah Limited"
-    ],
-    "buyerContact": [
-        "Phone: 3212308603"
-    ],
-    "excl": [
-        "880.00\n690.00\n1368.00\n3276.00",
-        "880.00\n690.00\n1368.00\n\n3276.00"
-    ],
-    "products": [
-        "Choice Essentials\nOptCore Design\nSimplify Solutions\n\nChoiceCore Files"
-    ],
-    "rate": [
-        "80.00\n46.00\n72.00\n63.00"
+        "Address: The Citizen Foundation Banglow 7 (A) Block-E Unit 6"
     ],
     "buyerName": [
-        "Name: muhammad nabeel"
-    ],
-    "date": [
-        "Date: 2024-12-25"
-    ],
-    "total": [
-        "6214.00\n\n1118.52\n\n7332.52",
-        "6214.00\n\n1118.52\n\n7332.52"
-    ],
-    "supplierName": [
-        ""
+        "Buyer's Name: MUHAMMAD AKHTAR"
     ],
     "buyerAddress": [
-        "Address: H R-70 Society Sindh",
-        "Address: H R-70 Society Sindh"
+        "Address: Spotlit Printers (P) Limited Street 16-A Block-B"
+    ],
+    "supplierSTN": [
+        "S.T. Reg. No. 10708-77-8761-11090-23"
     ],
     "buyerSTN": [
-        ""
+        "S.T. Reg. No.:! 2834-2880-8761-413-23"
     ],
     "quantity": [
-        "15\n19\n52",
-        "11\n15\n19\n32"
-    ],
-    "sales": [
-        "158.40\n124.20\n246.24\n989.68",
-        "158.40\n\n124.20\n\n246.24\n\n589.68"
-    ],
-    "incl": [
-        "1038.40\n814.20\n\n1614.24\n3865.68",
-        "1038.40\n814.20\n1614.24\n3865.68"
-    ],
-    "supplierNTN": [
-        ""
-    ],
-    "buyerNTN": [
-        "",
-        ""
+        "97\n30\n97\n38",
+        "97\n30\n97\n38"
     ],
     "businessName": [
-        "101 CHOICE",
-        "101 CHOICE"
+        "BEST J) ANITORIAL COMPANY ,NEW PAKISTAN\nGRAMMAR SCHOOL"
+    ],
+    "serialNumber": [
+        "Serial No.: 976848"
+    ],
+    "excl": [
+        "3,977.00\n2,190.00\n7,857.00\n4,118.00",
+        "3,977.00\n2,190.00\n7,857.00\n4,118.00"
+    ],
+    "products": [
+        "Clean Slate Docs\nSchool Sparkle\nFresh Start Papers\n\nEcoClean Classrooms",
+        "Clean Slate Docs\nSchool Sparkle\nFresh Start Papers\n\nEcoClean Classrooms"
+    ],
+    "rate": [
+        "41.00\n93.00\n81.00\n71.00",
+        "41.00\n93.00\n81.00\n71.00"
+    ],
+    "supplierNTN": [
+        "NTN: 4230109867931"
+    ],
+    "buyerNTN": [
+        "NTN: 3173776-5"
+    ],
+    "date": [
+        "Date: 28-06-2023",
+        "Date: 28-06-2023"
+    ],
+    "sales": [
+        "715.86\n502.20\n\n1,414.26\n\n741.24",
+        "715.86\n502.20\n1,414.26\n\n741.24"
+    ],
+    "incl": [
+        "4,692.86\n3,292.20\n9,271.26\n4,859.24",
+        "4,692.86\n3,292.20\n\n9,271.26\n4,859.24"
+    ],
+    "supplierName": [
+        "Supplier's Name: AlYOOB DESAI"
+    ],
+    "buyerContact": [
+        "Contact No.: 055-4223935 , 0300-8641330",
+        "Contact No.: 055-4223935 , 0300-8641330"
     ]
 }

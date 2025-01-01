@@ -39,11 +39,8 @@ info_logger, error_logger = logging_setup()
 app.info_logger = info_logger
 app.error_logger = error_logger
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        # csv_file_path = "data/data.csv"
-        # seed_data(start=0, end=15, file_path=csv_file_path, db=db, info_logger=info_logger, error_logger=error_logger)
+with app.app_context():
+    db.create_all()
 
+if __name__ == "__main__":
     app.run(debug=True)
-    # app.run(debug=True, use_reloader=False)

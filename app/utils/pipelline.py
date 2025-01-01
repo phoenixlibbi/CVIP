@@ -6,12 +6,12 @@ import pytesseract
 import json
 import re
 import onnxruntime as ort
-from pdf2image import convert_from_path  # For PDF to Image conversion
+from pdf2image import convert_from_path
 from utils.process_json import json_to_db
 
 
-# Specify the path to the Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+# Specify the path to the Tesseract executable for Windows
+# pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 
 # Preprocessing for Tesseract
@@ -199,7 +199,6 @@ def process_image(image_path, output_folder, model):
     with open(json_path, "w") as f:
         json.dump(cleaned_text, f, indent=4)
 
-    # os.remove(image_path)
     print(f"Processed: {image_path}")
     print(f"Cleaned data saved to: {json_path}")
 
