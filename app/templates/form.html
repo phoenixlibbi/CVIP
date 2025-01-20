@@ -89,6 +89,51 @@
 
         <button type="submit">Generate PDF</button>
     </form>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const table = document.querySelector("table tbody");
+            const totalExTaxInput = document.querySelector("input[name='total_ex_tax']");
+            const totalSalesTaxInput = document.querySelector("input[name='total_sales_tax']");
+            const totalInTaxInput = document.querySelector("input[name='total_in_tax']");
+
+            // Function to calculate Amount Including Tax for a single row
+            function calculateAmountIncludingTax(row) {
+                const amountExTax = parseFloat(row.querySelector("input[name*='amount_ex_tax']").value) || 0;
+                const salesTax = parseFloat(row.querySelector("input[name*='sales_tax']").value) || 0;
+                const amountInTax = amountExTax + salesTax;
+                row.querySelector("input[name*='amount_in_tax']").value = amountInTax.toFixed(2);
+                return { amountExTax, salesTax, amountInTax };
+            }
+
+            // Function to update totals
+            function updateTotals() {
+                let totalExTax = 0;
+                let totalSalesTax = 0;
+                let totalInTax = 0;
+
+                // Loop through each row in the table
+                table.querySelectorAll("tr").forEach((row) => {
+                    const { amountExTax, salesTax, amountInTax } = calculateAmountIncludingTax(row);
+                    totalExTax += amountExTax;
+                    totalSalesTax += salesTax;
+                    totalInTax += amountInTax;
+                });
+
+                // Update the Totals section
+                totalExTaxInput.value = totalExTax.toFixed(2);
+                totalSalesTaxInput.value = totalSalesTax.toFixed(2);
+                totalInTaxInput.value = totalInTax.toFixed(2);
+            }
+
+            // Attach event listeners to all input fields in the table
+            table.querySelectorAll("input").forEach((input) => {
+                input.addEventListener("input", updateTotals);
+            });
+
+            // Initialize totals on page load
+            updateTotals();
+        });
+    </script>
 </body>
 
 </html>
