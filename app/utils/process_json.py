@@ -37,8 +37,7 @@ def json_to_db():
         return value
 
     try:
-        # Locate JSON files
-        path = 'json'
+        path = 'json'   # dir
         if not os.path.exists(path):
             current_app.info_logger.info("JSON directory not found.")
             return "JSON directory not found."
@@ -55,6 +54,11 @@ def json_to_db():
             with open(file_path, 'r') as f:
                 json_data = json.load(f)
 
+            # Calculate totals
+            total_amount_excluding_tax = sum(clean_float(x) for x in json_data.get("excl", []))
+            total_sales_tax = sum(clean_float(x) for x in json_data.get("sales", []))
+            total_amount_including_tax = total_amount_excluding_tax + total_sales_tax
+
             # Create a new Invoice instance
             invoice = Invoice(
                 ntn=json_data.get("supplierNTN", ""),
@@ -69,14 +73,13 @@ def json_to_db():
                 customer_address=json_data.get("buyerAddress", ""),
                 business_name=json_data.get("businessName", [""])[0],
                 date=json_data.get("date", ""),
-                total_amount_excluding_tax=sum(clean_float(x) for x in json_data.get("excl", [])),
-                total_sales_tax=sum(clean_float(x) for x in json_data.get("sales", [])),
-                total_amount_including_tax=sum(clean_float(x) for x in json_data.get("incl", [])),
+                total_amount_excluding_tax=total_amount_excluding_tax,
+                total_sales_tax=total_sales_tax,
+                total_amount_including_tax=total_amount_including_tax,
             )
 
-            # Add invoice to the session
             db.session.add(invoice)
-            db.session.flush()  # Flush to get the invoice ID for products
+            db.session.flush()
 
             # Add products
             for product_name, quantity, rate, excl, sales, incl in zip(
@@ -101,12 +104,10 @@ def json_to_db():
                     )
                     db.session.add(product)
 
-            # Commit the transaction after processing each file
             db.session.commit()
 
-            # Log success and remove the processed file
             current_app.info_logger.info(f"Successfully processed and stored data from {file_path}.")
-            os.remove(file_path)  # Optionally remove the processed file after logging success
+            os.remove(file_path)
 
         return f"Successfully processed all JSON files."
 
